@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
 
-public class AlbumService {
+public class AlbumService extends BaseServiceClass{
 
     public Response getAlbum(String albumId) {
         return given()

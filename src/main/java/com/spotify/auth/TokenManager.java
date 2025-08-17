@@ -13,18 +13,21 @@ public class TokenManager {
     private static final String TOKEN_URL = PropertyUtils.getProperty(TOKEN_FILE, "tokenURL", "https://accounts.spotify.com/api/token");
     private static final String refreshToken = PropertyUtils.getProperty(TOKEN_FILE, "refreshToken");
     private static final String authCode = PropertyUtils.getProperty(TOKEN_FILE, "authCode");
-    private static final Instant storedExpiryTime = Instant.parse(PropertyUtils.getProperty(TOKEN_FILE, "storedExpiryTime"));
-    private static final String storedAccessToken = PropertyUtils.getProperty(TOKEN_FILE, "storedAccessToken");
 
-    public synchronized static String getToken() {
+    public static String getToken() {
 
-        if (storedAccessToken == null || Instant.now().isAfter(storedExpiryTime)) {
-            System.out.println("Refreshing Spotify access token...");
+        String storedAccessToken = PropertyUtils.getProperty(TOKEN_FILE, "storedAccessToken");
+        Instant storedExpiryTime = Instant.parse(PropertyUtils.getProperty(TOKEN_FILE, "storedExpiryTime"));
+
+
+        if (storedAccessToken.isEmpty() || Instant.now().isAfter(storedExpiryTime)) {
+            System.out.println("Refreshing & storing the Spotify access token...");
             // if the stored access token is null or expired, refresh it
             refreshToken();
         }
             // if the stored access token is not null or expired, simply return it
-                return storedAccessToken;
+        System.out.println("Fetching the stored token....");
+                return PropertyUtils.getProperty(TOKEN_FILE, "storedAccessToken");
         }
 
 
@@ -46,7 +49,6 @@ public class TokenManager {
         }else {
             int expiresIn = response.jsonPath().getInt("expires_in");
             String accessToken = response.jsonPath().getString("access_token");
-
             Instant expiryTime = Instant.now().plusSeconds(expiresIn - 300); // 1 min buffer
 
             // store the new access token and expiry time
