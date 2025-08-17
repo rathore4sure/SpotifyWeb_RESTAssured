@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
 
-public class TrackService {
+public class TrackService extends BaseServiceClass{
 
     public Response addTracksToPlaylist(String playlistId, String uris) {
         return given()
